@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-enum InputCommand
+public enum InputCommand
 {
 	Up,
 	UpRight,
@@ -18,15 +18,30 @@ enum InputCommand
 	special
 };
 
+
+
 public class InputManager : MonoBehaviour {
-	Queue<InputCommand> Inputs;
+	public struct playerInput
+	{
+		public InputCommand input;
+		public float timeAlive;
+		
+		public playerInput( InputCommand input, float timeAlive )
+		{
+			this.input = input;
+			this.timeAlive = timeAlive;
+		}
+	};
+	Queue<playerInput> Inputs;
+	static float MAX_TIME_TO_LIVE = .3f;
+	//for displaying on GUI
 	int lineCount;
 	int rectX;
 	int rectY;
 	
 	void Awake()
 	{
-		Inputs = new Queue<InputCommand>();
+		Inputs = new Queue<playerInput>();
 	}
 	
 	// Use this for initialization
@@ -48,7 +63,7 @@ public class InputManager : MonoBehaviour {
 	
 	void OnGUI()
 	{
-		foreach( int i in Inputs )
+		foreach( int i in Inputs.input )
 		{
 			rectY = lineCount * 30 + 50;
 			++lineCount;
@@ -61,35 +76,35 @@ public class InputManager : MonoBehaviour {
 	{
 		if( Input.GetKey( KeyCode.W ) && Input.GetKey( KeyCode.D ) )
 		{
-			Inputs.Enqueue( InputCommand.UpRight );
+			Inputs.Enqueue( new playerInput( InputCommand.UpRight, Time.time + MAX_TIME_TO_LIVE ) );
 		}
 		else if( Input.GetKey( KeyCode.W ) && Input.GetKey( KeyCode.A ) )
 		{
-			Inputs.Enqueue( InputCommand.UpLeft );
+			Inputs.Enqueue( new playerInput( InputCommand.UpLeft, Time.time + MAX_TIME_TO_LIVE ) );
 		}
 		else if( Input.GetKey( KeyCode.S ) && Input.GetKey( KeyCode.A ) )
 		{
-			Inputs.Enqueue( InputCommand.DownLeft );
+			Inputs.Enqueue( new playerInput( InputCommand.DownLeft, Time.time + MAX_TIME_TO_LIVE ) );
 		}
 		else if( Input.GetKey( KeyCode.S ) && Input.GetKey( KeyCode.D ) )
 		{
-			Inputs.Enqueue( InputCommand.DownRight );
+			Inputs.Enqueue( new playerInput( InputCommand.DownRight, Time.time + MAX_TIME_TO_LIVE ) );
 		}
 		else if( Input.GetKey( KeyCode.W ) )
 		{
-			Inputs.Enqueue( InputCommand.Up );
+			Inputs.Enqueue( new playerInput( InputCommand.Up, Time.time + MAX_TIME_TO_LIVE ) );
 		}
 		else if( Input.GetKey( KeyCode.A ) )
 		{
-			Inputs.Enqueue( InputCommand.Left );
+			Inputs.Enqueue( new playerInput( InputCommand.Left, Time.time + MAX_TIME_TO_LIVE ) );
 		}
 		else if( Input.GetKey( KeyCode.S ) )
 		{
-			Inputs.Enqueue( InputCommand.Down );
+			Inputs.Enqueue( new playerInput( InputCommand.Down, Time.time + MAX_TIME_TO_LIVE ) );
 		}
 		else if( Input.GetKey( KeyCode.D ) )
 		{
-			Inputs.Enqueue( InputCommand.Right) ;
+			Inputs.Enqueue( new playerInput( InputCommand.Right, Time.time + MAX_TIME_TO_LIVE ) ) ;
 		}
 	}
 }
