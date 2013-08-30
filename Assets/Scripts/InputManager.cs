@@ -24,16 +24,19 @@ public class InputManager : MonoBehaviour {
 	public struct playerInput
 	{
 		public InputCommand input;
-		public float timeAlive;
+		public float timeToDie;
 		
-		public playerInput( InputCommand input, float timeAlive )
+		//Constructor
+		public playerInput( InputCommand input, float timeToDie )
 		{
 			this.input = input;
-			this.timeAlive = timeAlive;
+			this.timeToDie = timeToDie;
 		}
 	};
 	Queue<playerInput> Inputs;
+
 	static float MAX_TIME_TO_LIVE = .3f;
+	
 	//for displaying on GUI
 	int lineCount;
 	int rectX;
@@ -53,25 +56,36 @@ public class InputManager : MonoBehaviour {
 	void Update () 
 	{
 		AddCommand();
-		while( Inputs.Count > 8 )
+		
+//		Another method of deleting inputs
+//
+//		foreach( playerInput i in Inputs )
+//		{
+//			if( i.timeToDie <= Time.time )
+//				Inputs.Dequeue();
+//		}
+		
+		while( Inputs.Count > 0 && Inputs.Peek().timeToDie <= Time.time )
 		{
+			Debug.Log( "Dequeue" );
 			Inputs.Dequeue();
 		}
-//		lineCount = 0;
 		Debug.Log( Inputs.Count );
 	}
 	
+	//Display the commands currently in the queue
 	void OnGUI()
 	{
-		foreach( int i in Inputs.input )
+		foreach( playerInput i in Inputs )
 		{
 			rectY = lineCount * 30 + 50;
 			++lineCount;
-			GUI.Label( new Rect( 50, rectY, 125, 125 ), i+"\n" );
+			GUI.Label( new Rect( 50, rectY, 125, 125 ), i.input+"\n" );
 		}
 		lineCount = 0;
 	}
 	
+	//Adds a command to the queue
 	void AddCommand()
 	{
 		if( Input.GetKey( KeyCode.W ) && Input.GetKey( KeyCode.D ) )
